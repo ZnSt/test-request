@@ -1,13 +1,12 @@
 import React from 'react';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import {
-  fetchAddTransactions,
-  getTransactions,
-} from 'redux/transactions/operations';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectAllCategories } from 'redux/transactions/selectors';
+import { fetchAddTransactions } from 'redux/transactions/operations';
 
 export const AddTransactions = () => {
   const dispatch = useDispatch();
+  const categories = useSelector(selectAllCategories);
 
   const [type, setType] = useState('');
   const [transactionDate, setTransactionDate] = useState('');
@@ -27,12 +26,11 @@ export const AddTransactions = () => {
       fetchAddTransactions({
         type,
         transactionDate,
-        categoryId: '3caa7ba0-79c0-40b9-ae1f-de1af1f6e386',
+        categoryId,
         amount,
         comment,
       })
     );
-    dispatch(getTransactions());
   };
 
   const handleChange = event => {
@@ -77,11 +75,12 @@ export const AddTransactions = () => {
           onChange={handleChange}
         />
         <label htmlFor="password">categoryId</label>
-        <select name="categoryId" value={categoryId} onChange={handleChange}>
-          <option value="products">Products</option>
-          <option value="car">Car</option>
-          <option value="self care">Self Care</option>
-          <option value="education">Education</option>
+        <select name="categoryId" onChange={handleChange}>
+          {categories.map(category => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
         </select>
         <label htmlFor="email">Amount</label>
         <input
